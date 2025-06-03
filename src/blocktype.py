@@ -5,18 +5,26 @@ class BlockType(Enum):
   HEADING = "heading"
   CODE = "code"
   QUOTE = "quote"
-  UNORDERED_LIST = "unordered_list"
-  ORDERED_LIST = "ordered_list"
+  ULIST = "unordered_list"
+  OLIST = "ordered_list"
 
 def block_to_block_type(markdown):
-  if markdown[:2] == "# ":
+  if markdown.startswith(("# ", "## ", "### ", "#### ", "##### ", "###### ")):
     return BlockType.HEADING
-  elif markdown[:3] == '```' and markdown[-3:] == '```':
+  elif markdown.startswith("```") and markdown.endswith("```"):
     return BlockType.CODE
-  elif markdown[0] == ">":
+  elif markdown.startswith(">"):
     return BlockType.QUOTE
-  elif markdown[:2] == "- ":
-    return BlockType.UNORDERED_LIST
+  elif markdown.startswith("- "):
+    return BlockType.ULIST
+  elif markdown.startswith("1. "):
+    list_num = 1
+    md_lines = markdown.split('\n')
+    for line in md_lines:
+      if not line.startswith(f"{list_num}. "):
+        return BlockType.PARAGRAPH
+      list_num += 1
+    return BlockType.OLIST
   
   return BlockType.PARAGRAPH
   
