@@ -1,5 +1,6 @@
 from enum import Enum
-
+from htmlnode import LeafNode
+from textnode import TextNode, TextType
 class BlockType(Enum):
   PARAGRAPH = "paragraph"
   HEADING = "heading"
@@ -27,4 +28,3 @@ def block_to_block_type(markdown):
     return BlockType.OLIST
   
   return BlockType.PARAGRAPH
-  
