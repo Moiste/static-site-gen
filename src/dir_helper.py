@@ -23,7 +23,7 @@ def copy_dir_recursive(src_path, dst_path):
     else:
       shutil.copy(src_item, dst_item)
 
-def generate_page(from_path, template_path, dest_path):
+def generate_page(base_path,from_path, template_path, dest_path):
   print(f"Generating page from {from_path} to {dest_path} using {template_path}")
 
   with open(from_path) as md_file, open(template_path) as template_file:
@@ -33,18 +33,20 @@ def generate_page(from_path, template_path, dest_path):
   title = extract_title(md_content)
   template_content = template_content.replace("{{ Title }}", title)
   template_content = template_content.replace("{{ Content }}", md_html)
+  template_content = template_content.replace('href="/', f'href="{base_path}')
+  template_content = template_content.replace('src="/', f'src="{base_path}')
 
   with open(dest_path, 'w') as html_page:
     html_page.write(template_content)
 
-def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+def generate_pages_recursive(base_path, dir_path_content, template_path, dest_dir_path):
   for item in os.listdir(dir_path_content):
     src_item = os.path.join(dir_path_content, item)
     dst_item = os.path.join(dest_dir_path, item)
     if os.path.isdir(src_item):
       if not os.path.exists(dst_item):
         os.mkdir(dst_item)
-      generate_pages_recursive(src_item, template_path, dst_item)
+      generate_pages_recursive(base_path, src_item, template_path, dst_item)
     elif src_item.endswith(".md"):
       dst_item = dst_item.replace(".md", ".html")
-      generate_page(src_item, template_path, dst_item)
+      generate_page(base_path, src_item, template_path, dst_item)
